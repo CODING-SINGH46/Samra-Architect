@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samra Architect | Premium Architecture Services</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Offer Banner -->
+  <div class="offer-banner">
+    <div class="offer-content">
+      <span class="offer-tag">🎉 SPECIAL OFFER</span>
+      <span class="offer-text">Get 15% off on your first project! Limited time offer.</span>
+      <button class="offer-close" onclick="closeOffer()">×</button>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <h2>Samra Architect</h2>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="book.html" class="nav-btn">Book Consultation</a></li>
+      </ul>
+      <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="header" id="home">
+    <div class="hero-content">
+      <h1 class="hero-title">Designing Spaces, <span class="highlight">Defining Lifestyles</span></h1>
+      <p class="hero-subtitle">20+ years of excellence in architectural design & planning</p>
+      <div class="hero-btns">
+        <a href="book.html" class="btn btn-primary">Start Your Project</a>
+        <a href="#portfolio" class="btn btn-secondary">View Our Work</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- About Section -->
+  <section class="section about-section" id="about">
+    <div class="container">
+      <h2 class="section-title">About Our Firm</h2>
+      <div class="about-grid">
+        <div class="about-content">
+          <h3>Excellence in Architecture Since 2003</h3>
+          <p>Samra Architect combines innovative design with practical functionality to create spaces that inspire and endure. Our team of licensed architects and designers brings passion and precision to every project.</p>
+          <div class="stats">
+            <div class="stat-item">
+              <h4>200+</h4>
+              <p>Projects Completed</p>
+            </div>
+            <div class="stat-item">
+              <h4>50+</h4>
+              <p>Happy Clients</p>
+            </div>
+            <div class="stat-item">
+              <h4>20+</h4>
+              <p>Years Experience</p>
+            </div>
+            <div class="stat-item">
+              <h4>15+</h4>
+              <p>Awards Won</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-image">
+          <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" alt="Architecture Firm">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="section services-section" id="services">
+    <div class="container">
+      <h2 class="section-title">Our Services</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <h3>Residential Architecture</h3>
+          <p>Custom home designs, renovations, and residential complexes.</p>
+          <a href="price.html#residential" class="service-link">Learn More →</a>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <h3>Commercial Architecture</h3>
+          <p>Office spaces, retail stores, and commercial buildings.</p>
+          <a href="price.html#commercial" class="service-link">Learn More →</a>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-palette"></i>
+          </div>
+          <h3>Interior Design</h3>
+          <p>Complete interior solutions that reflect your style.</p>
+          <a href="price.html#interior" class="service-link">Learn More →</a>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas fa-cube"></i>
+          </div>
+          <h3>3D Visualization</h3>
+          <p>Photorealistic 3D renderings and virtual tours.</p>
+          <a href="price.html#visualization" class="service-link">Learn More →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Section -->
+  <section class="section portfolio-section" id="portfolio">
+    <div class="container">
+      <h2 class="section-title">Featured Projects</h2>
+      <div class="portfolio-grid">
+        <div class="portfolio-item">
+          <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90" alt="Modern Villa">
+          <div class="portfolio-overlay">
+            <h3>Modern Villa Design</h3>
+            <p>Residential • 2024</p>
+          </div>
+        </div>
+        <div class="portfolio-item">
+          <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72" alt="Office Building">
+          <div class="portfolio-overlay">
+            <h3>Corporate Office</h3>
+            <p>Commercial • 2023</p>
+          </div>
+        </div>
+        <div class="portfolio-item">
+          <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7" alt="Interior Design">
+          <div class="portfolio-overlay">
+            <h3>Luxury Interior</h3>
+            <p>Interior Design • 2024</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to Transform Your Space?</h2>
+      <p>Book a consultation and let's create something amazing together</p>
+      <a href="book.html" class="btn btn-primary btn-large">Book Your Consultation</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-col">
+        <h3>Samra Architect</h3>
+        <p>Designing innovative spaces since 2003. Excellence in every detail.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p><i class="fas fa-map-marker-alt"></i> 123 Design Street, Mumbai</p>
+        <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+        <p><i class="fas fa-envelope"></i> contact@samraarchitect.com</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="#services">Services</a>
+        <a href="price.html">Pricing</a>
+        <a href="book.html">Book Consultation</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Samra Architect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

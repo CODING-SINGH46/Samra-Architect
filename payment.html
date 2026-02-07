@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | Samra Architect</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@latest/build/qrcode.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <h2>Samra Architect</h2>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="book.html">← Back to Booking</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="small-header">
+    <div class="container">
+      <h1>Secure Payment</h1>
+      <p>Complete your booking with our secure payment gateway</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="payment-container">
+        <div class="payment-steps">
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text">Your Details</span>
+          </div>
+          <div class="step active">
+            <span class="step-number">2</span>
+            <span class="step-text">Payment</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">Confirmation</span>
+          </div>
+        </div>
+
+        <div class="payment-content">
+          <div class="order-summary">
+            <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+            <div class="summary-item">
+              <span>Service:</span>
+              <span id="orderService">Online Consultation</span>
+            </div>
+            <div class="summary-item">
+              <span>Amount:</span>
+              <span class="price" id="orderAmount">₹999</span>
+            </div>
+            <div class="summary-item">
+              <span>Booking ID:</span>
+              <span id="bookingId">SAMRA-001</span>
+            </div>
+            <div class="summary-item">
+              <span>Date:</span>
+              <span id="orderDate">Today</span>
+            </div>
+          </div>
+
+          <div class="payment-methods">
+            <h3><i class="fas fa-credit-card"></i> Choose Payment Method</h3>
+            
+            <div class="payment-option active" onclick="selectPayment('upi')">
+              <div class="payment-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="payment-info">
+                <h4>UPI Payment</h4>
+                <p>Pay instantly via UPI apps</p>
+              </div>
+              <div class="payment-radio">
+                <div class="radio-dot"></div>
+              </div>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('qr')">
+              <div class="payment-icon">
+                <i class="fas fa-qrcode"></i>
+              </div>
+              <div class="payment-info">
+                <h4>QR Code</h4>
+                <p>Scan & pay from any UPI app</p>
+              </div>
+              <div class="payment-radio">
+                <div class="radio-dot"></div>
+              </div>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('card')">
+              <div class="payment-icon">
+                <i class="fas fa-credit-card"></i>
+              </div>
+              <div class="payment-info">
+                <h4>Credit/Debit Card</h4>
+                <p>Visa, MasterCard, RuPay</p>
+              </div>
+              <div class="payment-radio">
+                <div class="radio-dot"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UPI Payment Section -->
+          <div class="payment-section active" id="upiSection">
+            <div class="upi-apps">
+              <h4>Pay with your favorite UPI app</h4>
+              <div class="apps-grid">
+                <div class="app-btn" onclick="payWithApp('gpay')">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Pay.svg/1200px-Google_Pay.svg.png" alt="Google Pay">
+                  <span>Google Pay</span>
+                </div>
+                <div class="app-btn" onclick="payWithApp('phonepe')">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/PhonePe_Logo.svg" alt="PhonePe">
+                  <span>PhonePe</span>
+                </div>
+                <div class="app-btn" onclick="payWithApp('paytm')">
+                  <img src="https://upload.wikimedia.org/wikipedia/en/1/16/Paytm_Logo.png" alt="Paytm">
+                  <span>Paytm</span>
+                </div>
+                <div class="app-btn" onclick="payWithApp('bhim')">
+                  <img src="https://upload.wikimedia.org/wikipedia/en/3/3c/BHIM_Logo.png" alt="BHIM">
+                  <span>BHIM</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="upi-direct">
+              <h4>Or open any UPI app manually</h4>
+              <button class="btn btn-primary btn-large" onclick="openUPIApp()">
+                <i class="fas fa-external-link-alt"></i> Open UPI App
+              </button>
+              <p class="note">You'll be redirected to your default UPI app</p>
+            </div>
+          </div>
+
+          <!-- QR Code Section -->
+          <div class="payment-section" id="qrSection">
+            <div class="qr-container">
+              <h4>Scan QR Code to Pay</h4>
+              <div class="qr-code" id="qrcode"></div>
+              <p class="qr-upi-id">UPI ID: samraarchitect@upi</p>
+              <p class="qr-amount">Amount: <span id="qrAmount">₹999</span></p>
+              <button class="btn btn-secondary" onclick="downloadQR()">
+                <i class="fas fa-download"></i> Download QR
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Payment Section -->
+          <div class="payment-section" id="cardSection">
+            <form class="card-form">
+              <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Expiry Date</label>
+                  <input type="text" placeholder="MM/YY">
+                </div>
+                <div class="form-group">
+                  <label>CVV</label>
+                  <input type="password" placeholder="123" maxlength="3">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Cardholder Name</label>
+                <input type="text" placeholder="John Smith">
+              </div>
+              <button type="button" class="btn btn-primary" onclick="processCardPayment()">
+                Pay Now
+              </button>
+            </form>
+          </div>
+
+          <div class="payment-security">
+            <p><i class="fas fa-shield-alt"></i> 100% Secure Payment | SSL Encrypted</p>
+            <p><i class="fas fa-lock"></i> Your payment details are protected</p>
+          </div>
+
+          <button class="btn btn-success btn-large btn-block" onclick="completePayment()">
+            <i class="fas fa-check-circle"></i> Complete Payment & Get Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-bottom">
+      <p>© 2026 Samra Architect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="payment.js"></script>
+  <script>
+    // Initialize QR code
+    document.addEventListener('DOMContentLoaded', function() {
+      const amount = getUrlParam('price') || '999';
+      const service = getUrlParam('service') || 'Online Consultation';
+      
+      document.getElementById('orderService').textContent = service;
+      document.getElementById('orderAmount').textContent = `₹${amount}`;
+      document.getElementById('qrAmount').textContent = `₹${amount}`;
+      
+      // Generate QR code
+      const qrText = `upi://pay?pa=samraarchitect@upi&pn=Samra%20Architect&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(service)}`;
+      QRCode.toCanvas(document.getElementById('qrcode'), qrText, {
+        width: 200,
+        height: 200,
+        margin: 1
+      });
+      
+      // Auto-select UPI on mobile, QR on desktop
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        selectPayment('upi');
+      } else {
+        selectPayment('qr');
+      }
+    });
+    
+    function getUrlParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | Samra Architect</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@latest/build/qrcode.min.js"></script>
+  <style>
+    .payment-success {
+      display: none;
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .payment-success.show {
+      display: block;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .payment-simulator {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 30px;
+      text-align: center;
+    }
+    
+    .simulator-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 10px;
+      transition: background 0.3s;
+    }
+    
+    .simulator-btn:hover {
+      background: #218838;
+    }
+    
+    .simulator-btn.fail {
+      background: #dc3545;
+    }
+    
+    .simulator-btn.fail:hover {
+      background: #c82333;
+    }
+    
+    .demo-notice {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    
+    .upi-app-simulator {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .upi-app-simulator.show {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .upi-simulator-container {
+      background: white;
+      width: 320px;
+      border-radius: 15px;
+      overflow: hidden;
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    .upi-header {
+      background: #4a6fa5;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .upi-body {
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .upi-logo {
+      width: 60px;
+      height: 60px;
+      background: #4a6fa5;
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+    }
+    
+    .countdown {
+      font-size: 48px;
+      font-weight: bold;
+      color: #28a745;
+      margin: 20px 0;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <h2>Samra Architect</h2>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="book.html">← Back to Booking</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="small-header">
+    <div class="container">
+      <h1>Secure Payment</h1>
+      <p>Complete your booking with our secure payment gateway</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="demo-notice">
+        <i class="fas fa-info-circle"></i> This is a DEMO payment page. Use the simulator below to test payment flow.
+      </div>
+      
+      <div class="payment-success" id="paymentSuccess">
+        <i class="fas fa-check-circle"></i> Payment Successful! Redirecting to invoice...
+      </div>
+      
+      <div class="payment-container">
+        <div class="payment-steps">
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text">Booking</span>
+          </div>
+          <div class="step active">
+            <span class="step-number">2</span>
+            <span class="step-text">Payment</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">Confirmation</span>
+          </div>
+        </div>
+
+        <div class="payment-content">
+          <div class="order-summary">
+            <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+            <div class="summary-item">
+              <span>Service:</span>
+              <span id="orderService">Online Consultation</span>
+            </div>
+            <div class="summary-item">
+              <span>Amount:</span>
+              <span class="price" id="orderAmount">₹999</span>
+            </div>
+            <div class="summary-item">
+              <span>Booking ID:</span>
+              <span id="bookingId">SAMRA-<span id="bookingNum">001</span></span>
+            </div>
+            <div class="summary-item">
+              <span>Date:</span>
+              <span id="orderDate">Loading...</span>
+            </div>
+          </div>
+
+          <div class="payment-methods">
+            <h3><i class="fas fa-credit-card"></i> Choose Payment Method</h3>
+            
+            <div class="payment-option active" onclick="selectPayment('upi')">
+              <div class="payment-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="payment-info">
+                <h4>UPI Payment</h4>
+                <p>Pay instantly via UPI apps</p>
+              </div>
+              <div class="payment-radio">
+                <div class="radio-dot"></div>
+              </div>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('qr')">
+              <div class="payment-icon">
+                <i class="fas fa-qrcode"></i>
+              </div>
+              <div class="payment-info">
+                <h4>QR Code</h4>
+                <p>Scan & pay from any UPI app</p>
+              </div>
+              <div class="payment-radio">
+                <div class="radio-dot"></div>
+              </div>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('card')">
+              <div class="payment-icon">
+                <i class="fas fa-credit-card"></i>
+              </div>
+              <div class="payment-info">
+                <h4>Credit/Debit Card</h4>
+                <p>Visa, MasterCard, RuPay</p>
+              </div>
+              <div class="payment-radio">
+                <div class="radio-dot"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UPI Payment Section -->
+          <div class="payment-section active" id="upiSection">
+            <div class="upi-apps">
+              <h4>Pay with your favorite UPI app</h4>
+              <div class="apps-grid">
+                <div class="app-btn" onclick="simulateUPIPayment('gpay')">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Pay.svg/1200px-Google_Pay.svg.png" alt="Google Pay">
+                  <span>Google Pay</span>
+                </div>
+                <div class="app-btn" onclick="simulateUPIPayment('phonepe')">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/PhonePe_Logo.svg" alt="PhonePe">
+                  <span>PhonePe</span>
+                </div>
+                <div class="app-btn" onclick="simulateUPIPayment('paytm')">
+                  <img src="https://upload.wikimedia.org/wikipedia/en/1/16/Paytm_Logo.png" alt="Paytm">
+                  <span>Paytm</span>
+                </div>
+                <div class="app-btn" onclick="simulateUPIPayment('bhim')">
+                  <img src="https://upload.wikimedia.org/wikipedia/en/3/3c/BHIM_Logo.png" alt="BHIM">
+                  <span>BHIM</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="upi-direct">
+              <h4>Or open any UPI app manually</h4>
+              <button class="btn btn-primary btn-large" onclick="simulateUPIPayment('any')">
+                <i class="fas fa-external-link-alt"></i> Open UPI App
+              </button>
+              <p class="note">You'll be redirected to your default UPI app</p>
+            </div>
+          </div>
+
+          <!-- QR Code Section -->
+          <div class="payment-section" id="qrSection">
+            <div class="qr-container">
+              <h4>Scan QR Code to Pay</h4>
+              <div class="qr-code" id="qrcode"></div>
+              <p class="qr-upi-id">UPI ID: samraarchitect@upi</p>
+              <p class="qr-amount">Amount: <span id="qrAmount">₹999</span></p>
+              <button class="btn btn-secondary" onclick="simulateQRPayment()">
+                <i class="fas fa-qrcode"></i> Simulate QR Payment
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Payment Section -->
+          <div class="payment-section" id="cardSection">
+            <form class="card-form" id="cardForm">
+              <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNumber" value="4111 1111 1111 1111">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Expiry Date</label>
+                  <input type="text" placeholder="MM/YY" id="cardExpiry" value="12/30">
+                </div>
+                <div class="form-group">
+                  <label>CVV</label>
+                  <input type="password" placeholder="123" maxlength="3" id="cardCVV" value="123">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Cardholder Name</label>
+                <input type="text" placeholder="John Smith" id="cardName" value="Demo User">
+              </div>
+              <button type="button" class="btn btn-primary" onclick="simulateCardPayment()">
+                Pay Now
+              </button>
+            </form>
+          </div>
+
+          <!-- DEMO PAYMENT SIMULATOR -->
+          <div class="payment-simulator">
+            <h4><i class="fas fa-vial"></i> Demo Payment Simulator</h4>
+            <p>Test the payment flow without actual payment</p>
+            
+            <div class="simulator-buttons">
+              <button class="simulator-btn" onclick="simulateSuccessfulPayment()">
+                <i class="fas fa-check-circle"></i> Simulate Successful Payment
+              </button>
+              <button class="simulator-btn fail" onclick="simulateFailedPayment()">
+                <i class="fas fa-times-circle"></i> Simulate Failed Payment
+              </button>
+            </div>
+            
+            <p class="note" style="font-size: 12px; margin-top: 15px;">
+              <i class="fas fa-lightbulb"></i> This simulates real payment processing. Successful payment will redirect to invoice page.
+            </p>
+          </div>
+
+          <div class="payment-security">
+            <p><i class="fas fa-shield-alt"></i> 100% Secure Payment | SSL Encrypted</p>
+            <p><i class="fas fa-lock"></i> Your payment details are protected</p>
+          </div>
+
+          <button class="btn btn-success btn-large btn-block" onclick="processRealPayment()">
+            <i class="fas fa-check-circle"></i> Complete Payment & Get Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPI App Simulator Modal -->
+  <div class="upi-app-simulator" id="upiSimulator">
+    <div class="upi-simulator-container">
+      <div class="upi-header">
+        <h3><i class="fas fa-mobile-alt"></i> UPI Payment</h3>
+        <p>Processing your payment</p>
+      </div>
+      <div class="upi-body">
+        <div class="upi-logo">
+          <i class="fas fa-university"></i>
+        </div>
+        <h4>Payment to Samra Architect</h4>
+        <p>Amount: <strong id="simulatorAmount">₹999</strong></p>
+        <div class="countdown" id="countdown">3</div>
+        <p>Processing transaction...</p>
+        <div class="progress-bar" style="width: 100%; height: 4px; background: #e0e0e0; margin: 20px 0;">
+          <div id="progressFill" style="width: 0%; height: 100%; background: #28a745; transition: width 3s linear;"></div>
+        </div>
+        <button class="btn btn-secondary" onclick="cancelPayment()" style="margin-top: 10px;">
+          Cancel Payment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <p>© 2026 Samra Architect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/payment.js"></script>
+  <script>
+    // Initialize page with data from URL
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get parameters from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const amount = urlParams.get('price') || '999';
+      const service = decodeURIComponent(urlParams.get('service') || 'Online Consultation');
+      
+      // Generate random booking ID
+      const bookingNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      
+      // Update page elements
+      document.getElementById('orderService').textContent = service;
+      document.getElementById('orderAmount').textContent = `₹${amount}`;
+      document.getElementById('qrAmount').textContent = `₹${amount}`;
+      document.getElementById('bookingNum').textContent = bookingNum;
+      document.getElementById('simulatorAmount').textContent = `₹${amount}`;
+      document.getElementById('orderDate').textContent = new Date().toLocaleDateString('en-IN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      // Generate QR code
+      const qrText = `upi://pay?pa=samraarchitect@upi&pn=Samra%20Architect&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(service)}`;
+      QRCode.toCanvas(document.getElementById('qrcode'), qrText, {
+        width: 180,
+        height: 180,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
+      // Auto-select payment method based on device
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        selectPayment('upi');
+      } else {
+        selectPayment('qr');
+      }
+    });
+    
+    // Select payment method
+    function selectPayment(method) {
+      // Update UI
+      document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+      
+      // Show corresponding section
+      document.querySelectorAll('.payment-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(method + 'Section').classList.add('active');
+    }
+    
+    // Simulate UPI Payment
+    function simulateUPIPayment(app) {
+      const upiSimulator = document.getElementById('upiSimulator');
+      const progressFill = document.getElementById('progressFill');
+      
+      // Show simulator
+      upiSimulator.classList.add('show');
+      
+      // Start progress animation
+      progressFill.style.width = '0%';
+      setTimeout(() => {
+        progressFill.style.width = '100%';
+      }, 10);
+      
+      // Countdown from 3 to 0
+      let count = 3;
+      const countdownElement = document.getElementById('countdown');
+      const countdownInterval = setInterval(() => {
+        countdownElement.textContent = count;
+        count--;
+        
+        if (count < 0) {
+          clearInterval(countdownInterval);
+          simulateSuccessfulPayment();
+          upiSimulator.classList.remove('show');
+        }
+      }, 1000);
+    }
+    
+    // Simulate QR Payment
+    function simulateQRPayment() {
+      // Show confirmation dialog
+      if (confirm("Scan the QR code with any UPI app to complete payment.\n\nClick OK to simulate successful payment.")) {
+        simulateSuccessfulPayment();
+      }
+    }
+    
+    // Simulate Card Payment
+    function simulateCardPayment() {
+      const cardNumber = document.getElementById('cardNumber').value;
+      const cardExpiry = document.getElementById('cardExpiry').value;
+      const cardCVV = document.getElementById('cardCVV').value;
+      const cardName = document.getElementById('cardName').value;
+      
+      // Basic validation
+      if (!cardNumber || !cardExpiry || !cardCVV || !cardName) {
+        alert("Please fill all card details");
+        return;
+      }
+      
+      // Show processing
+      showPaymentLoader("Processing card payment...");
+      
+      // Simulate API call delay
+      setTimeout(() => {
+        hidePaymentLoader();
+        simulateSuccessfulPayment();
+      }, 2000);
+    }
+    
+    // Simulate Successful Payment
+    function simulateSuccessfulPayment() {
+      // Show success message
+      const successMsg = document.getElementById('paymentSuccess');
+      successMsg.classList.add('show');
+      
+      // Generate invoice data
+      const invoiceId = 'INV-' + Date.now();
+      const amount = document.getElementById('orderAmount').textContent;
+      const service = document.getElementById('orderService').textContent;
+      const bookingId = document.getElementById('bookingId').textContent;
+      
+      // Get booking details from localStorage or create demo data
+      let bookingDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {
+        name: "Demo User",
+        email: "demo@example.com",
+        phone: "+91 98765 43210",
+        address: "Mumbai, Maharashtra"
+      };
+      
+      // Create invoice data
+      const invoiceData = {
+        id: invoiceId,
+        bookingId: bookingId,
+        date: new Date().toLocaleDateString('en-IN'),
+        time: new Date().toLocaleTimeString('en-IN'),
+        amount: amount,
+        service: service,
+        status: "Paid",
+        paymentMethod: "UPI",
+        transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        client: bookingDetails.name,
+        email: bookingDetails.email,
+        phone: bookingDetails.phone,
+        address: bookingDetails.address,
+        projectType: bookingDetails.projectType || "Residential"
+      };
+      
+      // Save to localStorage for invoice page
+      localStorage.setItem('currentInvoice', JSON.stringify(invoiceData));
+      localStorage.setItem('lastPaymentSuccess', 'true');
+      
+      // Send email notification (simulated)
+      sendBookingEmail(bookingDetails, invoiceData);
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = `thankyou.html?invoice=${invoiceId}&status=success`;
+      }, 2000);
+    }
+    
+    // Simulate Failed Payment
+    function simulateFailedPayment() {
+      showPaymentLoader("Processing payment...");
+      
+      setTimeout(() => {
+        hidePaymentLoader();
+        
+        // Show error message
+        const successMsg = document.getElementById('paymentSuccess');
+        successMsg.innerHTML = '<i class="fas fa-times-circle"></i> Payment Failed! Please try again.';
+        successMsg.style.background = '#f8d7da';
+        successMsg.style.borderColor = '#f5c6cb';
+        successMsg.style.color = '#721c24';
+        successMsg.classList.add('show');
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          successMsg.classList.remove('show');
+        }, 3000);
+      }, 1500);
+    }
+    
+    // Cancel Payment
+    function cancelPayment() {
+      document.getElementById('upiSimulator').classList.remove('show');
+    }
+    
+    // Process Real Payment (for production)
+    function processRealPayment() {
+      // In production, this would process actual payment
+      // For demo, we'll simulate
+      simulateSuccessfulPayment();
+    }
+    
+    // Show Payment Loader
+    function showPaymentLoader(message = "Processing payment...") {
+      const loader = document.createElement('div');
+      loader.className = 'payment-loader';
+      loader.innerHTML = `
+        <div class="loader-content">
+          <div class="spinner"></div>
+          <p>${message}</p>
+        </div>
+      `;
+      document.body.appendChild(loader);
+    }
+    
+    // Hide Payment Loader
+    function hidePaymentLoader() {
+      const loader = document.querySelector('.payment-loader');
+      if (loader) loader.remove();
+    }
+    
+    // Send Booking Email (Simulated)
+    function sendBookingEmail(bookingDetails, invoiceData) {
+      console.log("Sending email to Samra Architect:", {
+        to: "samraarchitect@gmail.com",
+        subject: `New Booking: ${invoiceData.service}`,
+        body: `
+          New Booking Details:
+          --------------------
+          Client: ${bookingDetails.name}
+          Email: ${bookingDetails.email}
+          Phone: ${bookingDetails.phone}
+          Service: ${invoiceData.service}
+          Amount: ${invoiceData.amount}
+          Invoice ID: ${invoiceData.id}
+          Date: ${invoiceData.date}
+          
+          Project Details: ${bookingDetails.details || 'No details provided'}
+        `
+      });
+      
+      // In production, use EmailJS or backend API
+      // emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
+    }
+  </script>
+</body>
+</html>

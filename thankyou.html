@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You | Samra Architect</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .confetti {
+      position: fixed;
+      width: 15px;
+      height: 15px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      opacity: 0;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    .confetti:nth-child(2n) {
+      background: #4ecdc4;
+    }
+    
+    .confetti:nth-child(3n) {
+      background: #ffe66d;
+    }
+    
+    .confetti:nth-child(4n) {
+      background: #ff8e53;
+    }
+    
+    .invoice-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px 10px 0 0;
+      margin-bottom: 30px;
+    }
+    
+    .invoice-actions {
+      display: flex;
+      gap: 15px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .whatsapp-share {
+      background: #25D366;
+      color: white;
+    }
+    
+    .whatsapp-share:hover {
+      background: #1da851;
+    }
+    
+    .email-share {
+      background: #ea4335;
+      color: white;
+    }
+    
+    .email-share:hover {
+      background: #d33426;
+    }
+    
+    .timeline {
+      margin: 40px 0;
+      position: relative;
+      padding-left: 30px;
+    }
+    
+    .timeline:before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #c9a14a;
+    }
+    
+    .timeline-step {
+      position: relative;
+      margin-bottom: 30px;
+      padding-left: 30px;
+    }
+    
+    .timeline-step:before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 5px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #c9a14a;
+      border: 3px solid white;
+      box-shadow: 0 0 0 3px #c9a14a;
+    }
+    
+    .timeline-step.completed:before {
+      background: #28a745;
+      box-shadow: 0 0 0 3px #28a745;
+    }
+    
+    .timeline-step.active:before {
+      background: #ffc107;
+      box-shadow: 0 0 0 3px #ffc107;
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body onload="createConfetti()">
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <h2>Samra Architect</h2>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="book.html">Book Another</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="thankyou-container">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1 class="fade-in">Payment Successful!</h1>
+        <p class="subtitle">Thank you for your booking. Your consultation has been confirmed.</p>
+        
+        <!-- Invoice Card -->
+        <div class="invoice-header">
+          <h2><i class="fas fa-file-invoice"></i> INVOICE</h2>
+          <p>Booking Confirmed • Payment Received</p>
+        </div>
+        
+        <div class="confirmation-details">
+          <div class="detail-card">
+            <h3><i class="fas fa-receipt"></i> Invoice Details</h3>
+            <div class="detail-item">
+              <span>Invoice ID:</span>
+              <span id="invoiceId" class="invoice-id">INV-001</span>
+            </div>
+            <div class="detail-item">
+              <span>Booking ID:</span>
+              <span id="bookingId">SAMRA-001</span>
+            </div>
+            <div class="detail-item">
+              <span>Date & Time:</span>
+              <span id="invoiceDateTime">Loading...</span>
+            </div>
+            <div class="detail-item">
+              <span>Service:</span>
+              <span id="invoiceService">Online Consultation</span>
+            </div>
+            <div class="detail-item">
+              <span>Amount Paid:</span>
+              <span class="price" id="invoiceAmount">₹999</span>
+            </div>
+            <div class="detail-item">
+              <span>Payment Method:</span>
+              <span id="paymentMethod">UPI</span>
+            </div>
+            <div class="detail-item">
+              <span>Transaction ID:</span>
+              <span id="transactionId" style="font-family: monospace;">TXN123456</span>
+            </div>
+            <div class="detail-item">
+              <span>Status:</span>
+              <span class="status success">Confirmed</span>
+            </div>
+          </div>
+          
+          <div class="detail-card">
+            <h3><i class="fas fa-user"></i> Client Details</h3>
+            <div class="detail-item">
+              <span>Name:</span>
+              <span id="clientName">John Smith</span>
+            </div>
+            <div class="detail-item">
+              <span>Email:</span>
+              <span id="clientEmail">john@example.com</span>
+            </div>
+            <div class="detail-item">
+              <span>Phone:</span>
+              <span id="clientPhone">+91 98765 43210</span>
+            </div>
+            <div class="detail-item">
+              <span>Project Location:</span>
+              <span id="clientAddress">Mumbai, Maharashtra</span>
+            </div>
+            <div class="detail-item">
+              <span>Project Type:</span>
+              <span id="projectType">Residential</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="invoice-actions">
+          <button class="btn btn-primary btn-large" onclick="downloadInvoice()">
+            <i class="fas fa-download"></i> Download Invoice (PDF)
+          </button>
+          <button class="btn whatsapp-share" onclick="shareViaWhatsApp()">
+            <i class="fab fa-whatsapp"></i> Share via WhatsApp
+          </button>
+          <button class="btn email-share" onclick="sendInvoiceEmail()">
+            <i class="fas fa-envelope"></i> Email Invoice
+          </button>
+          <button class="btn btn-secondary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print Invoice
+          </button>
+        </div>
+        
+        <!-- Next Steps Timeline -->
+        <div class="next-steps">
+          <h3><i class="fas fa-list-check"></i> What Happens Next?</h3>
+          <div class="timeline">
+            <div class="timeline-step completed">
+              <h4>Step 1: Booking & Payment</h4>
+              <p>Your booking is confirmed and payment is received</p>
+              <small>Completed just now</small>
+            </div>
+            <div class="timeline-step active">
+              <h4>Step 2: Confirmation Email</h4>
+              <p>Invoice and booking details sent to your email</p>
+              <small>Within 5 minutes</small>
+            </div>
+            <div class="timeline-step">
+              <h4>Step 3: Team Contact</h4>
+              <p>Our architect will contact you within 24 hours</p>
+              <small>Tomorrow</small>
+            </div>
+            <div class="timeline-step">
+              <h4>Step 4: Consultation</h4>
+              <p>Schedule and conduct your consultation session</p>
+              <small>Within 2 days</small>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Contact & Support -->
+        <div class="contact-support">
+          <div class="detail-card">
+            <h3><i class="fas fa-headset"></i> Need Help?</h3>
+            <p><i class="fas fa-phone"></i> Call us: +91 98765 43210</p>
+            <p><i class="fas fa-envelope"></i> Email: support@samraarchitect.com</p>
+            <p><i class="fas fa-clock"></i> Support Hours: Mon-Sat, 9 AM - 7 PM</p>
+            <p><i class="fas fa-exclamation-circle"></i> For urgent queries, mention your Invoice ID</p>
+          </div>
+        </div>
+        
+        <!-- CTA Buttons -->
+        <div class="action-buttons">
+          <a href="index.html" class="btn">
+            <i class="fas fa-home"></i> Back to Home
+          </a>
+          <a href="book.html" class="btn btn-primary">
+            <i class="fas fa-calendar-plus"></i> Book Another Service
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-bottom">
+      <p>© 2026 Samra Architect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/invoice.js"></script>
+  <script>
+    // Create confetti animation
+    function createConfetti() {
+      const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff8e53'];
+      const container = document.body;
+      
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-20px';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        container.appendChild(confetti);
+        
+        // Animate
+        const animation = confetti.animate([
+          { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(${Math.random() * 100 - 50}px, 100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+        ], {
+          duration: 2000 + Math.random() * 3000,
+          easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+        });
+        
+        // Remove after animation
+        animation.onfinish = () => confetti.remove();
+      }
+    }
+    
+    // Load invoice data
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get invoice ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const invoiceIdFromUrl = urlParams.get('invoice');
+      
+      // Get invoice data from localStorage
+      let invoiceData = JSON.parse(localStorage.getItem('currentInvoice')) || {};
+      const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {};
+      
+      // If no invoice data, check if payment was successful
+      const paymentSuccess = localStorage.getItem('lastPaymentSuccess');
+      
+      if (!invoiceData.id && paymentSuccess === 'true') {
+        // Create demo invoice data
+        invoiceData = {
+          id: invoiceIdFromUrl || 'INV-' + Date.now(),
+          bookingId: 'SAMRA-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
+          date: new Date().toLocaleDateString('en-IN'),
+          time: new Date().toLocaleTimeString('en-IN'),
+          amount: '₹999',
+          service: 'Online Consultation (30 min)',
+          status: "Paid",
+          paymentMethod: "UPI",
+          transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+          client: bookingDetails.name || "Demo User",
+          email: bookingDetails.email || "demo@example.com",
+          phone: bookingDetails.phone || "+91 98765 43210",
+          address: bookingDetails.address || "Mumbai, Maharashtra",
+          projectType: bookingDetails.projectType || "Residential"
+        };
+        
+        localStorage.setItem('currentInvoice', JSON.stringify(invoiceData));
+      }
+      
+      // Populate invoice details
+      document.getElementById('invoiceId').textContent = invoiceData.id;
+      document.getElementById('bookingId').textContent = invoiceData.bookingId;
+      document.getElementById('invoiceDateTime').textContent = `${invoiceData.date} at ${invoiceData.time}`;
+      document.getElementById('invoiceService').textContent = invoiceData.service;
+      document.getElementById('invoiceAmount').textContent = invoiceData.amount;
+      document.getElementById('paymentMethod').textContent = invoiceData.paymentMethod;
+      document.getElementById('transactionId').textContent = invoiceData.transactionId;
+      
+      // Populate client details
+      document.getElementById('clientName').textContent = invoiceData.client;
+      document.getElementById('clientEmail').textContent = invoiceData.email;
+      document.getElementById('clientPhone').textContent = invoiceData.phone;
+      document.getElementById('clientAddress').textContent = invoiceData.address;
+      document.getElementById('projectType').textContent = invoiceData.projectType;
+      
+      // Show success message if redirected from payment
+      if (urlParams.get('status') === 'success') {
+        console.log("Payment successful, showing confirmation");
+      }
+    });
+    
+    // Share via WhatsApp
+    function shareViaWhatsApp() {
+      const invoiceId = document.getElementById('invoiceId').textContent;
+      const amount = document.getElementById('invoiceAmount').textContent;
+      const service = document.getElementById('invoiceService').textContent;
+      
+      const text = `✅ My booking with Samra Architect is confirmed!\n\n📋 Invoice: ${invoiceId}\n💰 Amount: ${amount}\n🏗️ Service: ${service}\n\nThank you Samra Architect!`;
+      
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+    
+    // Send Invoice Email
+    function sendInvoiceEmail() {
+      const clientEmail = document.getElementById('clientEmail').textContent;
+      
+      if (clientEmail && clientEmail !== 'demo@example.com') {
+        alert(`Invoice will be sent to ${clientEmail}`);
+        // In production, integrate with EmailJS or backend
+      } else {
+        alert("Please update your email address in the booking form to receive invoice via email.");
+      }
+    }
+    
+    // Auto-download invoice after 3 seconds
+    setTimeout(() => {
+      const autoDownload = localStorage.getItem('autoDownloadInvoice');
+      if (autoDownload !== 'false') {
+        // Optional: Uncomment to auto-download
+        // downloadInvoice();
+      }
+    }, 3000);
+  </script>
+</body>
+</html>
