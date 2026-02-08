@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Auto-slide offer text (if multiple offers)
   const offerTexts = [
     "🎉 Get 15% off on your first project! Limited time offer.",
-    "🌟 New client special: Free 3D visualization with any full package!",
+    "🌟 New client special: Free 3D visualization with full package!",
     "🏆 Award-winning design team now accepting new projects."
   ];
   
@@ -95,22 +95,3 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(el);
   });
 });
-
-// Price calculation function
-function calculateCustomQuote() {
-  const area = prompt('Enter project area (in sq ft):');
-  const type = prompt('Project type (Residential/Commercial):');
-  
-  if (area && type) {
-    const baseRate = type.toLowerCase() === 'residential' ? 50 : 70;
-    const quote = area * baseRate;
-    
-    alert(`Estimated quote for ${area} sq ft ${type} project: ₹${quote.toLocaleString()}`);
-    
-    // Pre-fill booking form
-    localStorage.setItem('customQuote', quote);
-    localStorage.setItem('projectType', type);
-    
-    window.location.href = 'book.html';
-  }
-}

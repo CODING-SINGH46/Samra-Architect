@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thank You | Samra Architect</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
     /* Add to existing styles */
     .invoice-screenshot {
@@ -178,27 +179,7 @@
           </div>
         </div>
         
-        <!-- Invoice Screenshot -->
-        <div class="invoice-screenshot">
-          <div style="background: white; padding: 20px; border: 1px solid #ddd;">
-            <h4 style="color: var(--primary); margin-bottom: 15px; text-align: center;">
-              <i class="fas fa-file-invoice"></i> INVOICE
-            </h4>
-            <p><strong>Invoice ID:</strong> <span id="screenshotInvoiceId">INV-001</span></p>
-            <p><strong>Client:</strong> <span id="screenshotClientName">John Smith</span></p>
-            <p><strong>Service:</strong> <span id="screenshotService">Online Consultation</span></p>
-            <p><strong>Amount:</strong> <span id="screenshotAmount">₹999</span></p>
-            <p><strong>UTR:</strong> <span id="screenshotUTR">123456789012</span></p>
-            <p><strong>Date:</strong> <span id="screenshotDate">Today</span></p>
-            <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed #ddd;">
-              <small>Samra Architect | +91 98765 43210</small>
-            </div>
-          </div>
-          <p style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
-            <i class="fas fa-camera"></i> Take screenshot of this invoice for sharing
-          </p>
-        </div>
-        
+                
         <!-- Share Instructions -->
         <div class="share-instructions">
           <h4><i class="fas fa-share-alt"></i> Share Your Invoice</h4>
@@ -209,13 +190,13 @@
         
         <!-- Action Buttons -->
         <div class="share-buttons">
-          <button class="share-btn whatsapp-share" onclick="shareInvoiceWhatsApp()">
+          <button class="share-btn whatsapp-share" onclick="typeof shareInvoiceWhatsApp === 'function' && shareInvoiceWhatsApp()">
             <i class="fab fa-whatsapp"></i> Share on WhatsApp
           </button>
-          <button class="share-btn email-share" onclick="sendInvoiceEmail()">
+          <button class="share-btn email-share" onclick="typeof sendInvoiceEmail === 'function' && sendInvoiceEmail()">
             <i class="fas fa-envelope"></i> Email Invoice
           </button>
-          <button class="btn btn-primary" onclick="downloadInvoice()">
+          <button class="btn btn-primary" onclick="typeof downloadInvoice === 'function' && downloadInvoice()">
             <i class="fas fa-download"></i> Download PDF
           </button>
           <button class="btn btn-secondary" onclick="window.print()">
@@ -282,8 +263,16 @@
     </div>
   </footer>
 
-  <script src="js/invoice.js"></script>
+  <script src="invoice.js"></script>
   <script>
+    // Safe element updater
+    function setElementText(id, text) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = text;
+      }
+    }
+    
     // Load invoice data
     function loadInvoiceData() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -294,57 +283,34 @@
       const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {};
       const paymentVerification = JSON.parse(localStorage.getItem('paymentVerification')) || {};
       
-      // If no invoice data, create demo
-      if (!invoiceData.id) {
-        invoiceData = {
-          id: invoiceIdFromUrl || 'INV-' + Date.now(),
-          bookingId: 'SAMRA-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
-          date: new Date().toLocaleDateString('en-IN'),
-          time: new Date().toLocaleTimeString('en-IN'),
-          amount: '₹999',
-          service: 'Online Consultation (30 min)',
-          status: "Paid",
-          paymentMethod: "UPI",
-          utrNumber: utrFromUrl || paymentVerification.utrNumber || "123456789012",
-          paymentTime: paymentVerification.paymentDateTime || new Date().toLocaleString('en-IN'),
-          transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-          client: bookingDetails.name || "Demo User",
-          email: bookingDetails.email || "demo@example.com",
-          phone: bookingDetails.phone || "+91 98765 43210",
-          address: bookingDetails.address || "Mumbai, Maharashtra",
-          projectType: bookingDetails.projectType || "Residential"
-        };
-        
-        localStorage.setItem('currentInvoice', JSON.stringify(invoiceData));
-      }
       
       // Populate invoice details
-      document.getElementById('invoiceId').textContent = invoiceData.id;
-      document.getElementById('bookingId').textContent = invoiceData.bookingId;
-      document.getElementById('invoiceService').textContent = invoiceData.service;
-      document.getElementById('invoiceAmount').textContent = invoiceData.amount;
-      document.getElementById('paymentMethod').textContent = invoiceData.paymentMethod;
-      document.getElementById('utrNumber').textContent = invoiceData.utrNumber || "Not provided";
-      document.getElementById('paymentTime').textContent = invoiceData.paymentTime || invoiceData.time;
+      setElementText('invoiceId', invoiceData.id);
+      setElementText('bookingId', invoiceData.bookingId);
+      setElementText('invoiceService', invoiceData.service);
+      setElementText('invoiceAmount', invoiceData.amount);
+      setElementText('paymentMethod', invoiceData.paymentMethod);
+      setElementText('utrNumber', invoiceData.utrNumber || "Not provided");
+      setElementText('paymentTime', invoiceData.paymentTime || invoiceData.time);
       
       // Populate client details
-      document.getElementById('clientName').textContent = invoiceData.client;
-      document.getElementById('clientEmail').textContent = invoiceData.email;
-      document.getElementById('clientPhone').textContent = invoiceData.phone;
-      document.getElementById('clientAddress').textContent = invoiceData.address;
-      document.getElementById('projectType').textContent = invoiceData.projectType;
+      setElementText('clientName', invoiceData.client);
+      setElementText('clientEmail', invoiceData.email);
+      setElementText('clientPhone', invoiceData.phone);
+      setElementText('clientAddress', invoiceData.address);
+      setElementText('projectType', invoiceData.projectType);
       
       // Populate UTR display
-      document.getElementById('displayUTR').textContent = invoiceData.utrNumber || "Not provided";
-      document.getElementById('displayPaymentTime').textContent = invoiceData.paymentTime || invoiceData.time;
+      setElementText('displayUTR', invoiceData.utrNumber || "Not provided");
+      setElementText('displayPaymentTime', invoiceData.paymentTime || invoiceData.time);
       
-      // Populate screenshot display
-      document.getElementById('screenshotInvoiceId').textContent = invoiceData.id;
-      document.getElementById('screenshotClientName').textContent = invoiceData.client;
-      document.getElementById('screenshotService').textContent = invoiceData.service;
-      document.getElementById('screenshotAmount').textContent = invoiceData.amount;
-      document.getElementById('screenshotUTR').textContent = invoiceData.utrNumber || "Not provided";
-      document.getElementById('screenshotDate').textContent = invoiceData.date;
+      // Populate screenshot display (these elements may not exist, so safe check is needed)
+      setElementText('screenshotInvoiceId', invoiceData.id);
+      setElementText('screenshotClientName', invoiceData.client);
+      setElementText('screenshotService', invoiceData.service);
+      setElementText('screenshotAmount', invoiceData.amount);
+      setElementText('screenshotUTR', invoiceData.utrNumber || "Not provided");
+      setElementText('screenshotDate', invoiceData.date);
     }
     
     // Share via WhatsApp with specific number
@@ -356,7 +322,7 @@
       const utrNumber = document.getElementById('utrNumber').textContent;
       
       // WhatsApp number to share with
-      const whatsappNumber = "916375626274"; // Remove + and spaces
+      const whatsappNumber = "916312544444"; // Remove + and spaces
       
       const text = `✅ Payment Confirmed - Samra Architect\n\n` +
                   `📋 Invoice: ${invoiceId}\n` +
@@ -418,8 +384,12 @@ ${clientEmail}`;
     // Auto-download invoice PDF after 3 seconds
     setTimeout(() => {
       const autoDownload = localStorage.getItem('autoDownloadInvoice');
-      if (autoDownload !== 'false') {
-        downloadInvoice();
+      if (autoDownload !== 'false' && typeof window.downloadInvoice === 'function') {
+        try {
+          downloadInvoice();
+        } catch (error) {
+          console.error('Error auto-downloading invoice:', error);
+        }
       }
     }, 3000);
     
