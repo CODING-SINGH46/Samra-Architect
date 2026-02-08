@@ -1392,3 +1392,100 @@ footer {
   color: #e74c3c;
   font-weight: bold;
 }
+
+/* UTR Payment Styles */
+.utr-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  margin: 2rem 0;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  display: none;
+}
+
+.utr-section.active {
+  display: block;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.utr-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.file-upload {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border 0.3s;
+  margin: 1rem 0;
+}
+
+.file-upload:hover {
+  border-color: var(--primary);
+}
+
+.file-upload i {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.file-preview {
+  display: none;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.file-preview img {
+  max-width: 200px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.payment-verified {
+  display: none;
+  background: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.payment-verified.show {
+  display: block;
+}
+
+/* Invoice Share Styles */
+.invoice-screenshot {
+  max-width: 300px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  margin: 1rem auto;
+  display: block;
+}
+
+.share-instructions {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+/* Payment Details Display */
+.payment-details-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  border-left: 4px solid var(--primary);
+}
+
+.payment-details-card h4 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
