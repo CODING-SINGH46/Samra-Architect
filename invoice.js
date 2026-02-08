@@ -1,15 +1,51 @@
 // invoice.js - PDF Invoice Generation for Samra Architect
-(function() {
-  // Ensure jsPDF is loaded
-  if (typeof jsPDF === 'undefined') {
-    console.error('jsPDF is not loaded. Please include jsPDF library.');
+
+let downloadInvoiceInitialized = false;
+let initAttempts = 0;
+const maxAttempts = 100; // Try for up to 10 seconds (100 * 100ms)
+
+// Wait for jsPDF to load, then initialize the download function
+function initializeDownloadFunction() {
+  if (downloadInvoiceInitialized) {
     return;
   }
+  
+  initAttempts++;
+  
+  // Check if jsPDF is available
+  if (typeof window.jsPDF === 'undefined' && typeof window.jspdf === 'undefined') {
+    // jsPDF not loaded yet
+    if (initAttempts < maxAttempts) {
+      setTimeout(initializeDownloadFunction, 100);
+      return;
+    } else {
+      // Timeout - define a fallback function
+      console.error('jsPDF failed to load after 10 seconds');
+      window.downloadInvoice = function() {
+        alert('PDF library failed to load. Please refresh the page and try again.');
+      };
+      downloadInvoiceInitialized = true;
+      return;
+    }
+  }
 
-  // Main invoice download function
+  // jsPDF is now available, define the download function
   window.downloadInvoice = function() {
     try {
-      const { jsPDF } = window.jspdf;
+      if (typeof window.jsPDF === 'undefined' && typeof window.jspdf === 'undefined') {
+        alert('PDF library is not available. Please refresh the page.');
+        return;
+      }
+      
+      // Get jsPDF from the loaded library
+      const jsPDFLib = window.jsPDF || window.jspdf;
+      const { jsPDF } = jsPDFLib;
+      
+      if (!jsPDF) {
+        alert('PDF library is not properly initialized. Please refresh the page.');
+        return;
+      }
+      
       const doc = new jsPDF();
       
       const invoiceData = JSON.parse(localStorage.getItem('currentInvoice')) || {};
@@ -43,11 +79,11 @@
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.text('Designing Spaces. Defining Lifestyles.', 105, 28, null, null, 'center');
-      doc.text('123 Design Street, Mumbai, Maharashtra 400001', 105, 33, null, null, 'center');
+      doc.text('Tehsil Road, Sri Vijaynagar, Rajasthan,India Pin Code 335703', 105, 33, null, null, 'center');
       
       // Contact Info
       doc.setFontSize(8);
-      doc.text('Phone: +91 98765 43210', 20, 45);
+      doc.text('Phone: +91 6375626274', 20, 45);
       doc.text('Email: contact@samraarchitect.com', 105, 45);
       doc.text('Website: www.samraarchitect.com', 190, 45, null, null, 'right');
       
@@ -131,48 +167,49 @@
       const serviceLines = doc.splitTextToSize(serviceDesc, 100);
       doc.text(serviceLines, 25, yPos + 18);
       
-      // Amount
-      const amount = parseFloat(invoiceData.amount?.replace('₹', '') || '999');
-      doc.text(`₹${amount.toFixed(2)}`, 165, yPos + 18, null, null, 'right');
+      // Amount - properly extract number from formatted string
+      let amountStr = invoiceData.amount?.toString() || '999';
+      const amount = parseFloat(amountStr.replace(/[₹,\s]/g, '')) || 999;
+      doc.text(`Rs. ${amount.toFixed(2)}`, 165, yPos + 18, null, null, 'right');
       
       // ==================== CALCULATIONS ====================
       yPos += 30;
       
       // Calculations
       const gstRate = 0.18; // 18% GST
-      const sgst = amount * gstRate / 2;
-      const cgst = amount * gstRate / 2;
+      const sgst = amount * (gstRate / 2);
+      const cgst = amount * (gstRate / 2);
       const totalGST = sgst + cgst;
       const grandTotal = amount + totalGST;
       
       // Table for calculations
       doc.setFontSize(9);
-      doc.text('Subtotal:', 140, yPos);
-      doc.text(`₹${amount.toFixed(2)}`, 165, yPos, null, null, 'right');
+      doc.text('Subtotal:', 130, yPos, null, null, 'right');
+      doc.text(`Rs. ${amount.toFixed(2)}`, 165, yPos, null, null, 'right');
       yPos += 6;
       
-      doc.text('SGST (9%):', 140, yPos);
-      doc.text(`₹${sgst.toFixed(2)}`, 165, yPos, null, null, 'right');
+      doc.text('SGST (9%):', 130, yPos, null, null, 'right');
+      doc.text(`Rs. ${sgst.toFixed(2)}`, 165, yPos, null, null, 'right');
       yPos += 6;
       
-      doc.text('CGST (9%):', 140, yPos);
-      doc.text(`₹${cgst.toFixed(2)}`, 165, yPos, null, null, 'right');
+      doc.text('CGST (9%):', 130, yPos, null, null, 'right');
+      doc.text(`Rs. ${cgst.toFixed(2)}`, 165, yPos, null, null, 'right');
       yPos += 6;
       
       doc.setDrawColor(201, 161, 74);
       doc.setLineWidth(0.3);
-      doc.line(140, yPos, 190, yPos);
+      doc.line(120, yPos, 190, yPos);
       yPos += 6;
       
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text('Total Amount:', 140, yPos);
-      doc.text(`₹${grandTotal.toFixed(2)}`, 165, yPos, null, null, 'right');
+      doc.text('Total Amount:', 130, yPos, null, null, 'right');
+      doc.text(`Rs. ${grandTotal.toFixed(2)}`, 165, yPos, null, null, 'right');
       
       // Amount in Words
       yPos += 10;
       doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
+      doc.setFont("helvetica", "bold");
       doc.setTextColor(100, 100, 100);
       const amountInWords = convertToWords(grandTotal);
       doc.text(`Amount in Words: ${amountInWords}`, 20, yPos);
@@ -250,7 +287,7 @@
       doc.setFontSize(7);
       doc.setTextColor(150, 150, 150);
       doc.text('Thank you for choosing Samra Architect!', 105, 285, null, null, 'center');
-      doc.text('For any queries, call +91 98765 43210 or email support@samraarchitect.com', 105, 288, null, null, 'center');
+      doc.text('For any queries, call +91 6375626274 or email support@samraarchitect.com', 105, 288, null, null, 'center');
       doc.text('This is a computer-generated invoice.', 105, 291, null, null, 'center');
       
       // ==================== SAVE PDF ====================
@@ -269,6 +306,23 @@
     }
   };
   
+  downloadInvoiceInitialized = true;
+}
+
+// Initialize the download function when script loads
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeDownloadFunction);
+} else {
+  initializeDownloadFunction();
+}
+
+// Also try to initialize after various delays to allow jsPDF CDN time to load
+setTimeout(initializeDownloadFunction, 100);
+setTimeout(initializeDownloadFunction, 300);
+setTimeout(initializeDownloadFunction, 800);
+setTimeout(initializeDownloadFunction, 1500);
+setTimeout(initializeDownloadFunction, 3000);
+  
   // ==================== HELPER FUNCTIONS ====================
   
   // Convert number to words for invoice
@@ -283,50 +337,64 @@
       '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
     ];
     
+    // Helper function for conversion without "Rupees" suffix
+    function convertLessThanThousand(n) {
+      if (n === 0) return '';
+      
+      let words = '';
+      
+      // Hundreds
+      if (Math.floor(n / 100) > 0) {
+        words += a[Math.floor(n / 100)] + ' Hundred ';
+        n %= 100;
+      }
+      
+      // Tens and Ones
+      if (n > 0) {
+        if (n < 20) {
+          words += a[n];
+        } else {
+          words += b[Math.floor(n / 10)];
+          if (n % 10 > 0) {
+            words += ' ' + a[n % 10];
+          }
+        }
+      }
+      
+      return words.trim();
+    }
+    
     const decimals = Math.round((num - Math.floor(num)) * 100);
     let n = Math.floor(num);
     
-    if (n === 0) return 'Zero Rupees';
+    if (n === 0) return 'Zero Rupees Only';
     
     let words = '';
     
     // Crores
     if (Math.floor(n / 10000000) > 0) {
-      words += convertToWords(Math.floor(n / 10000000)) + ' Crore ';
+      words += convertLessThanThousand(Math.floor(n / 10000000)) + ' Crore ';
       n %= 10000000;
     }
     
     // Lakhs
     if (Math.floor(n / 100000) > 0) {
-      words += convertToWords(Math.floor(n / 100000)) + ' Lakh ';
+      words += convertLessThanThousand(Math.floor(n / 100000)) + ' Lakh ';
       n %= 100000;
     }
     
     // Thousands
     if (Math.floor(n / 1000) > 0) {
-      words += convertToWords(Math.floor(n / 1000)) + ' Thousand ';
+      words += convertLessThanThousand(Math.floor(n / 1000)) + ' Thousand ';
       n %= 1000;
     }
     
-    // Hundreds
-    if (Math.floor(n / 100) > 0) {
-      words += convertToWords(Math.floor(n / 100)) + ' Hundred ';
-      n %= 100;
-    }
-    
-    // Tens and Ones
+    // Remainder
     if (n > 0) {
-      if (n < 20) {
-        words += a[n];
-      } else {
-        words += b[Math.floor(n / 10)];
-        if (n % 10 > 0) {
-          words += ' ' + a[n % 10];
-        }
-      }
+      words += convertLessThanThousand(n) + ' ';
     }
     
-    words += ' Rupees';
+    words = words.trim() + ' Rupees';
     
     // Paise
     if (decimals > 0) {
@@ -779,5 +847,4 @@
     printInvoice: window.printInvoice,
     showToast: window.showToast
   };
-  
-})();
+
