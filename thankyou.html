@@ -8,43 +8,33 @@
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .confetti {
-      position: fixed;
-      width: 15px;
-      height: 15px;
-      background: #ff6b6b;
-      border-radius: 50%;
-      opacity: 0;
-      z-index: 1000;
-      pointer-events: none;
+    /* Add to existing styles */
+    .invoice-screenshot {
+      max-width: 300px;
+      margin: 20px auto;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      background: white;
     }
     
-    .confetti:nth-child(2n) {
-      background: #4ecdc4;
-    }
-    
-    .confetti:nth-child(3n) {
-      background: #ffe66d;
-    }
-    
-    .confetti:nth-child(4n) {
-      background: #ff8e53;
-    }
-    
-    .invoice-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 30px;
-      border-radius: 10px 10px 0 0;
-      margin-bottom: 30px;
-    }
-    
-    .invoice-actions {
+    .share-buttons {
       display: flex;
       gap: 15px;
-      margin: 30px 0;
-      flex-wrap: wrap;
       justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    
+    .share-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
     }
     
     .whatsapp-share {
@@ -54,6 +44,7 @@
     
     .whatsapp-share:hover {
       background: #1da851;
+      transform: translateY(-2px);
     }
     
     .email-share {
@@ -63,56 +54,28 @@
     
     .email-share:hover {
       background: #d33426;
+      transform: translateY(-2px);
     }
     
-    .timeline {
-      margin: 40px 0;
-      position: relative;
-      padding-left: 30px;
-    }
-    
-    .timeline:before {
-      content: '';
-      position: absolute;
-      left: 10px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: #c9a14a;
-    }
-    
-    .timeline-step {
-      position: relative;
-      margin-bottom: 30px;
-      padding-left: 30px;
-    }
-    
-    .timeline-step:before {
-      content: '';
-      position: absolute;
-      left: 4px;
-      top: 5px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #c9a14a;
-      border: 3px solid white;
-      box-shadow: 0 0 0 3px #c9a14a;
-    }
-    
-    .timeline-step.completed:before {
+    .payment-verified-badge {
       background: #28a745;
-      box-shadow: 0 0 0 3px #28a745;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
     }
     
-    .timeline-step.active:before {
-      background: #ffc107;
-      box-shadow: 0 0 0 3px #ffc107;
-      animation: pulse 2s infinite;
+    .utr-details {
+      background: #e8f5e9;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
     }
   </style>
 </head>
-<body onload="createConfetti()">
+<body onload="createConfetti(); loadInvoiceData();">
 
   <nav class="navbar">
     <div class="nav-container">
@@ -133,18 +96,29 @@
           <i class="fas fa-check-circle"></i>
         </div>
         
-        <h1 class="fade-in">Payment Successful!</h1>
-        <p class="subtitle">Thank you for your booking. Your consultation has been confirmed.</p>
+        <h1 class="fade-in">Payment Received!</h1>
+        <p class="subtitle">Thank you for your booking. We'll contact you within 24 hours.</p>
+        
+        <!-- Payment Status -->
+        <div class="payment-status">
+          <div class="payment-verified-badge">
+            <i class="fas fa-check-circle"></i> Payment Verified via UPI
+          </div>
+          <div class="utr-details">
+            <p><strong>UTR Number:</strong> <span id="displayUTR">Loading...</span></p>
+            <p><strong>Payment Time:</strong> <span id="displayPaymentTime">Loading...</span></p>
+          </div>
+        </div>
         
         <!-- Invoice Card -->
         <div class="invoice-header">
           <h2><i class="fas fa-file-invoice"></i> INVOICE</h2>
-          <p>Booking Confirmed • Payment Received</p>
+          <p>Booking Confirmed • Payment Verified</p>
         </div>
         
         <div class="confirmation-details">
           <div class="detail-card">
-            <h3><i class="fas fa-receipt"></i> Invoice Details</h3>
+            <h3><i class="fas fa-receipt"></i> Invoice & Payment</h3>
             <div class="detail-item">
               <span>Invoice ID:</span>
               <span id="invoiceId" class="invoice-id">INV-001</span>
@@ -154,8 +128,12 @@
               <span id="bookingId">SAMRA-001</span>
             </div>
             <div class="detail-item">
-              <span>Date & Time:</span>
-              <span id="invoiceDateTime">Loading...</span>
+              <span>UTR Number:</span>
+              <span id="utrNumber" style="font-family: monospace;">123456789012</span>
+            </div>
+            <div class="detail-item">
+              <span>Payment Time:</span>
+              <span id="paymentTime">Loading...</span>
             </div>
             <div class="detail-item">
               <span>Service:</span>
@@ -170,12 +148,8 @@
               <span id="paymentMethod">UPI</span>
             </div>
             <div class="detail-item">
-              <span>Transaction ID:</span>
-              <span id="transactionId" style="font-family: monospace;">TXN123456</span>
-            </div>
-            <div class="detail-item">
               <span>Status:</span>
-              <span class="status success">Confirmed</span>
+              <span class="status success">Verified</span>
             </div>
           </div>
           
@@ -204,19 +178,48 @@
           </div>
         </div>
         
+        <!-- Invoice Screenshot -->
+        <div class="invoice-screenshot">
+          <div style="background: white; padding: 20px; border: 1px solid #ddd;">
+            <h4 style="color: var(--primary); margin-bottom: 15px; text-align: center;">
+              <i class="fas fa-file-invoice"></i> INVOICE
+            </h4>
+            <p><strong>Invoice ID:</strong> <span id="screenshotInvoiceId">INV-001</span></p>
+            <p><strong>Client:</strong> <span id="screenshotClientName">John Smith</span></p>
+            <p><strong>Service:</strong> <span id="screenshotService">Online Consultation</span></p>
+            <p><strong>Amount:</strong> <span id="screenshotAmount">₹999</span></p>
+            <p><strong>UTR:</strong> <span id="screenshotUTR">123456789012</span></p>
+            <p><strong>Date:</strong> <span id="screenshotDate">Today</span></p>
+            <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed #ddd;">
+              <small>Samra Architect | +91 98765 43210</small>
+            </div>
+          </div>
+          <p style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+            <i class="fas fa-camera"></i> Take screenshot of this invoice for sharing
+          </p>
+        </div>
+        
+        <!-- Share Instructions -->
+        <div class="share-instructions">
+          <h4><i class="fas fa-share-alt"></i> Share Your Invoice</h4>
+          <p>1. Take a screenshot of the invoice above (or download PDF)</p>
+          <p>2. Click WhatsApp to share with our team</p>
+          <p>3. Click Email to send invoice to yourself</p>
+        </div>
+        
         <!-- Action Buttons -->
-        <div class="invoice-actions">
-          <button class="btn btn-primary btn-large" onclick="downloadInvoice()">
-            <i class="fas fa-download"></i> Download Invoice (PDF)
+        <div class="share-buttons">
+          <button class="share-btn whatsapp-share" onclick="shareInvoiceWhatsApp()">
+            <i class="fab fa-whatsapp"></i> Share on WhatsApp
           </button>
-          <button class="btn whatsapp-share" onclick="shareViaWhatsApp()">
-            <i class="fab fa-whatsapp"></i> Share via WhatsApp
-          </button>
-          <button class="btn email-share" onclick="sendInvoiceEmail()">
+          <button class="share-btn email-share" onclick="sendInvoiceEmail()">
             <i class="fas fa-envelope"></i> Email Invoice
           </button>
+          <button class="btn btn-primary" onclick="downloadInvoice()">
+            <i class="fas fa-download"></i> Download PDF
+          </button>
           <button class="btn btn-secondary" onclick="window.print()">
-            <i class="fas fa-print"></i> Print Invoice
+            <i class="fas fa-print"></i> Print
           </button>
         </div>
         
@@ -225,36 +228,37 @@
           <h3><i class="fas fa-list-check"></i> What Happens Next?</h3>
           <div class="timeline">
             <div class="timeline-step completed">
-              <h4>Step 1: Booking & Payment</h4>
-              <p>Your booking is confirmed and payment is received</p>
-              <small>Completed just now</small>
+              <h4>Step 1: Payment Verification</h4>
+              <p>Your UPI payment is verified</p>
+              <small>Completed</small>
             </div>
             <div class="timeline-step active">
-              <h4>Step 2: Confirmation Email</h4>
-              <p>Invoice and booking details sent to your email</p>
-              <small>Within 5 minutes</small>
+              <h4>Step 2: Team Contact</h4>
+              <p>Our architect will contact you on WhatsApp/call</p>
+              <small>Within 24 hours</small>
             </div>
             <div class="timeline-step">
-              <h4>Step 3: Team Contact</h4>
-              <p>Our architect will contact you within 24 hours</p>
-              <small>Tomorrow</small>
-            </div>
-            <div class="timeline-step">
-              <h4>Step 4: Consultation</h4>
-              <p>Schedule and conduct your consultation session</p>
+              <h4>Step 3: Consultation Scheduling</h4>
+              <p>Schedule your consultation session</p>
               <small>Within 2 days</small>
+            </div>
+            <div class="timeline-step">
+              <h4>Step 4: Project Discussion</h4>
+              <p>Detailed discussion of your requirements</p>
+              <small>Within 3 days</small>
             </div>
           </div>
         </div>
         
-        <!-- Contact & Support -->
+        <!-- Contact Information -->
         <div class="contact-support">
           <div class="detail-card">
-            <h3><i class="fas fa-headset"></i> Need Help?</h3>
-            <p><i class="fas fa-phone"></i> Call us: +91 98765 43210</p>
-            <p><i class="fas fa-envelope"></i> Email: support@samraarchitect.com</p>
+            <h3><i class="fas fa-headset"></i> Need Immediate Assistance?</h3>
+            <p><i class="fab fa-whatsapp"></i> WhatsApp: <strong>+91 98765 43210</strong></p>
+            <p><i class="fas fa-phone"></i> Call: <strong>+91 98765 43210</strong></p>
+            <p><i class="fas fa-envelope"></i> Email: <strong>support@samraarchitect.com</strong></p>
             <p><i class="fas fa-clock"></i> Support Hours: Mon-Sat, 9 AM - 7 PM</p>
-            <p><i class="fas fa-exclamation-circle"></i> For urgent queries, mention your Invoice ID</p>
+            <p><i class="fas fa-exclamation-circle"></i> Mention your Invoice ID in all communications</p>
           </div>
         </div>
         
@@ -274,54 +278,24 @@
   <footer>
     <div class="footer-bottom">
       <p>© 2026 Samra Architect. All rights reserved.</p>
+      <p>UPI: samraarchitect@upi | Support: +91 98765 43210</p>
     </div>
   </footer>
 
   <script src="js/invoice.js"></script>
   <script>
-    // Create confetti animation
-    function createConfetti() {
-      const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff8e53'];
-      const container = document.body;
-      
-      for (let i = 0; i < 100; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + 'vw';
-        confetti.style.top = '-20px';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-        container.appendChild(confetti);
-        
-        // Animate
-        const animation = confetti.animate([
-          { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-          { transform: `translate(${Math.random() * 100 - 50}px, 100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-        ], {
-          duration: 2000 + Math.random() * 3000,
-          easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
-        });
-        
-        // Remove after animation
-        animation.onfinish = () => confetti.remove();
-      }
-    }
-    
     // Load invoice data
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get invoice ID from URL
+    function loadInvoiceData() {
       const urlParams = new URLSearchParams(window.location.search);
       const invoiceIdFromUrl = urlParams.get('invoice');
+      const utrFromUrl = urlParams.get('utr');
       
-      // Get invoice data from localStorage
       let invoiceData = JSON.parse(localStorage.getItem('currentInvoice')) || {};
       const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {};
+      const paymentVerification = JSON.parse(localStorage.getItem('paymentVerification')) || {};
       
-      // If no invoice data, check if payment was successful
-      const paymentSuccess = localStorage.getItem('lastPaymentSuccess');
-      
-      if (!invoiceData.id && paymentSuccess === 'true') {
-        // Create demo invoice data
+      // If no invoice data, create demo
+      if (!invoiceData.id) {
         invoiceData = {
           id: invoiceIdFromUrl || 'INV-' + Date.now(),
           bookingId: 'SAMRA-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
@@ -331,6 +305,8 @@
           service: 'Online Consultation (30 min)',
           status: "Paid",
           paymentMethod: "UPI",
+          utrNumber: utrFromUrl || paymentVerification.utrNumber || "123456789012",
+          paymentTime: paymentVerification.paymentDateTime || new Date().toLocaleString('en-IN'),
           transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
           client: bookingDetails.name || "Demo User",
           email: bookingDetails.email || "demo@example.com",
@@ -345,11 +321,11 @@
       // Populate invoice details
       document.getElementById('invoiceId').textContent = invoiceData.id;
       document.getElementById('bookingId').textContent = invoiceData.bookingId;
-      document.getElementById('invoiceDateTime').textContent = `${invoiceData.date} at ${invoiceData.time}`;
       document.getElementById('invoiceService').textContent = invoiceData.service;
       document.getElementById('invoiceAmount').textContent = invoiceData.amount;
       document.getElementById('paymentMethod').textContent = invoiceData.paymentMethod;
-      document.getElementById('transactionId').textContent = invoiceData.transactionId;
+      document.getElementById('utrNumber').textContent = invoiceData.utrNumber || "Not provided";
+      document.getElementById('paymentTime').textContent = invoiceData.paymentTime || invoiceData.time;
       
       // Populate client details
       document.getElementById('clientName').textContent = invoiceData.client;
@@ -358,44 +334,122 @@
       document.getElementById('clientAddress').textContent = invoiceData.address;
       document.getElementById('projectType').textContent = invoiceData.projectType;
       
-      // Show success message if redirected from payment
-      if (urlParams.get('status') === 'success') {
-        console.log("Payment successful, showing confirmation");
-      }
-    });
+      // Populate UTR display
+      document.getElementById('displayUTR').textContent = invoiceData.utrNumber || "Not provided";
+      document.getElementById('displayPaymentTime').textContent = invoiceData.paymentTime || invoiceData.time;
+      
+      // Populate screenshot display
+      document.getElementById('screenshotInvoiceId').textContent = invoiceData.id;
+      document.getElementById('screenshotClientName').textContent = invoiceData.client;
+      document.getElementById('screenshotService').textContent = invoiceData.service;
+      document.getElementById('screenshotAmount').textContent = invoiceData.amount;
+      document.getElementById('screenshotUTR').textContent = invoiceData.utrNumber || "Not provided";
+      document.getElementById('screenshotDate').textContent = invoiceData.date;
+    }
     
-    // Share via WhatsApp
-    function shareViaWhatsApp() {
+    // Share via WhatsApp with specific number
+    function shareInvoiceWhatsApp() {
       const invoiceId = document.getElementById('invoiceId').textContent;
       const amount = document.getElementById('invoiceAmount').textContent;
       const service = document.getElementById('invoiceService').textContent;
+      const clientName = document.getElementById('clientName').textContent;
+      const utrNumber = document.getElementById('utrNumber').textContent;
       
-      const text = `✅ My booking with Samra Architect is confirmed!\n\n📋 Invoice: ${invoiceId}\n💰 Amount: ${amount}\n🏗️ Service: ${service}\n\nThank you Samra Architect!`;
+      // WhatsApp number to share with
+      const whatsappNumber = "916375626274"; // Remove + and spaces
       
-      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      const text = `✅ Payment Confirmed - Samra Architect\n\n` +
+                  `📋 Invoice: ${invoiceId}\n` +
+                  `👤 Client: ${clientName}\n` +
+                  `🏗️ Service: ${service}\n` +
+                  `💰 Amount: ${amount}\n` +
+                  `🔢 UTR: ${utrNumber}\n\n` +
+                  `📞 Please contact for any queries.\n` +
+                  `⏰ Our team will reach you within 24 hours.`;
+      
+      // Open WhatsApp with specific number and message
+      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
     }
     
-    // Send Invoice Email
-    function sendInvoiceEmail() {
-      const clientEmail = document.getElementById('clientEmail').textContent;
-      
-      if (clientEmail && clientEmail !== 'demo@example.com') {
-        alert(`Invoice will be sent to ${clientEmail}`);
-        // In production, integrate with EmailJS or backend
-      } else {
-        alert("Please update your email address in the booking form to receive invoice via email.");
-      }
-    }
+// Send Invoice Email - Opens default email client
+function sendInvoiceEmail() {
+  const invoiceId = document.getElementById('invoiceId').textContent.trim();
+  const clientName = document.getElementById('clientName').textContent.trim();
+  const clientEmail = document.getElementById('clientEmail').textContent.trim();
+  const amount = document.getElementById('invoiceAmount').textContent.trim();
+  const service = document.getElementById('invoiceService').textContent.trim();
+  const utrNumber = document.getElementById('utrNumber').textContent.trim();
+
+  // Email details
+  const toEmail = "samraarchitect@gmail.com"; // Samra Architect
+  const subject = `Invoice Payment Confirmation - ${invoiceId}`;
+
+  const body =
+`Dear Samra Architect Team,
+
+This is ${clientName} (${clientEmail}).
+
+Please find my invoice payment details below:
+
+Invoice ID : ${invoiceId}
+Service    : ${service}
+Amount     : ${amount}
+UTR Number : ${utrNumber}
+Date       : ${new Date().toLocaleDateString('en-IN')}
+
+Kindly confirm receipt of payment.
+
+Thank you.
+
+Best regards,
+${clientName}
+${clientEmail}`;
+
+  // Open default email client
+  const mailtoLink =
+    `mailto:${toEmail}` +
+    `?subject=${encodeURIComponent(subject)}` +
+    `&body=${encodeURIComponent(body)}`;
+
+  window.location.href = mailtoLink;
+}
     
-    // Auto-download invoice after 3 seconds
+    // Auto-download invoice PDF after 3 seconds
     setTimeout(() => {
       const autoDownload = localStorage.getItem('autoDownloadInvoice');
       if (autoDownload !== 'false') {
-        // Optional: Uncomment to auto-download
-        // downloadInvoice();
+        downloadInvoice();
       }
     }, 3000);
+    
+    // Confetti animation
+    function createConfetti() {
+      const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff8e53', '#c9a14a'];
+      const container = document.body;
+      
+      for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-20px';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.width = Math.random() * 15 + 5 + 'px';
+        confetti.style.height = Math.random() * 15 + 5 + 'px';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        container.appendChild(confetti);
+        
+        const animation = confetti.animate([
+          { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(${Math.random() * 100 - 50}px, 100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+        ], {
+          duration: 2000 + Math.random() * 3000,
+          easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
+        });
+        
+        animation.onfinish = () => confetti.remove();
+      }
+    }
   </script>
 </body>
 </html>
