@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UPI Payment | Samra Architect</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/qrcode@latest/build/qrcode.min.js"></script>
   <style>
@@ -40,32 +39,7 @@
       margin-left: 10px;
     }
     
-    .payment-status {
-      display: none;
-      padding: 15px;
-      border-radius: 5px;
-      margin: 1rem 0;
-      text-align: center;
-    }
-    
-    .payment-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    
-    .payment-pending {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeaa7;
-    }
-    
-    .timer {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--primary);
-      margin: 1rem 0;
-    }
+
   </style>
 </head>
 <body>
@@ -91,14 +65,6 @@
 
   <section class="section">
     <div class="container">
-      <div class="demo-notice">
-        <i class="fas fa-info-circle"></i> This is a DEMO. Use the simulator below to test payment flow.
-      </div>
-      
-      <div class="payment-success" id="paymentSuccess" style="display: none;">
-        <i class="fas fa-check-circle"></i> Payment Successful! Redirecting to invoice...
-      </div>
-      
       <div class="payment-container">
         <div class="payment-steps">
           <div class="step">
@@ -140,7 +106,7 @@
             
             <!-- QR Code -->
             <div class="qr-container">
-              <div class="qr-code" id="qrcode"></div>
+              <canvas class="qr-code" id="qrcode" width="200" height="200"></canvas>
               <p class="qr-amount">Amount: <span id="qrAmount">₹999</span></p>
             </div>
             
@@ -216,41 +182,7 @@
             </div>
           </div>
 
-          <!-- Payment Simulator -->
-          <div class="payment-simulator">
-            <h4><i class="fas fa-vial"></i> Demo Payment Simulator</h4>
-            <p>Test without actual payment</p>
-            
-            <div class="simulator-buttons">
-              <button class="simulator-btn" onclick="simulateUPIPayment()">
-                <i class="fas fa-qrcode"></i> Simulate UPI Payment
-              </button>
-              <button class="simulator-btn" onclick="autoFillUTRDemo()">
-                <i class="fas fa-magic"></i> Auto-fill Demo UTR
-              </button>
-            </div>
-            
-            <div class="timer" id="paymentTimer" style="display: none;">
-              Payment processing: <span id="countdown">5</span>s
-            </div>
-          </div>
-
-          <div class="payment-security">
-            <p><i class="fas fa-shield-alt"></i> 100% Secure Payment</p>
-            <p><i class="fas fa-lock"></i> Payment verified manually by our team</p>
-            <p><i class="fas fa-phone"></i> Payment Issues? Call: +91 98765 43210</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="footer-bottom">
-      <p>© 2026 Samra Architect. All rights reserved.</p>
-      <p>UPI ID: samraarchitect@upi | Support: +91 98765 43210</p>
-    </div>
-  </footer>
+          <script src="payment.js"></script>
 
   <script>
     // Initialize page
@@ -355,119 +287,6 @@
       }, 1500);
     });
     
-    // Simulate UPI Payment
-    function simulateUPIPayment() {
-      const timer = document.getElementById('paymentTimer');
-      const countdownElement = document.getElementById('countdown');
-      
-      timer.style.display = 'block';
-      let countdown = 5;
-      
-      const interval = setInterval(() => {
-        countdownElement.textContent = countdown;
-        countdown--;
-        
-        if (countdown < 0) {
-          clearInterval(interval);
-          timer.style.display = 'none';
-          
-          // Generate demo UTR and auto-fill
-          autoFillUTRDemo();
-        }
-      }, 1000);
-    }
-    
-    // Auto-fill demo UTR
-    function autoFillUTRDemo() {
-      // Generate random 12-digit UTR
-      const demoUTR = Math.floor(100000000000 + Math.random() * 900000000000).toString();
-      
-      // Set UTR and date
-      document.getElementById('utrNumber').value = demoUTR;
-      
-      // Set time to 2 minutes ago for demo
-      const demoTime = new Date(Date.now() - 2 * 60 * 1000);
-      const localDateTime = new Date(demoTime.getTime() - demoTime.getTimezoneOffset() * 60000)
-        .toISOString().slice(0, 16);
-      document.getElementById('paymentDateTime').value = localDateTime;
-      
-      // Show message
-      alert(`Demo UTR filled: ${demoUTR}\n\nClick "Verify Payment & Continue" to proceed.`);
-    }
-    
-    // Complete Payment Process
-    function completePayment() {
-      // Get booking details
-      const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {
-        name: "Demo User",
-        email: "demo@example.com",
-        phone: "+91 98765 43210",
-        address: "Mumbai, Maharashtra"
-      };
-      
-      // Get payment verification
-      const paymentVerification = JSON.parse(localStorage.getItem('paymentVerification')) || {
-        utrNumber: "123456789012",
-        paymentDateTime: new Date().toISOString()
-      };
-      
-      // Generate invoice
-      const invoiceId = 'INV-' + Date.now();
-      const amount = document.getElementById('orderAmount').textContent;
-      const service = document.getElementById('orderService').textContent;
-      const bookingId = document.getElementById('bookingId').textContent;
-      
-      // Create invoice data
-      const invoiceData = {
-        id: invoiceId,
-        bookingId: bookingId,
-        date: new Date().toLocaleDateString('en-IN'),
-        time: new Date().toLocaleTimeString('en-IN'),
-        amount: amount,
-        service: service,
-        status: "Paid - Pending Verification",
-        paymentMethod: "UPI",
-        utrNumber: paymentVerification.utrNumber,
-        paymentTime: paymentVerification.paymentDateTime,
-        transactionId: "TXN" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-        client: bookingDetails.name,
-        email: bookingDetails.email,
-        phone: bookingDetails.phone,
-        address: bookingDetails.address,
-        projectType: bookingDetails.projectType || "Residential"
-      };
-      
-      // Save invoice data
-      localStorage.setItem('currentInvoice', JSON.stringify(invoiceData));
-      localStorage.setItem('lastPaymentSuccess', 'true');
-      
-      // Generate PDF invoice
-      generateInvoicePDF(invoiceData);
-      
-      // Send email notification
-      sendBookingEmail(bookingDetails, invoiceData);
-      
-      // Redirect to thank you page
-      setTimeout(() => {
-        window.location.href = `thankyou.html?invoice=${invoiceId}&status=success&utr=${paymentVerification.utrNumber}`;
-      }, 1000);
-    }
-    
-    // Generate PDF Invoice
-    function generateInvoicePDF(invoiceData) {
-      // This would use jsPDF to generate PDF
-      console.log('Generating invoice PDF:', invoiceData);
-      localStorage.setItem('invoicePDF', 'generated');
-    }
-    
-    // Send Booking Email
-    function sendBookingEmail(bookingDetails, invoiceData) {
-      console.log('Email would be sent to:', {
-        to: "samraarchitect@gmail.com",
-        subject: `New Payment: ${invoiceData.service}`,
-        body: `New payment received from ${bookingDetails.name}`
-      });
-    }
   </script>
 </body>
 </html>
