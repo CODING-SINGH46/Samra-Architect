@@ -59,7 +59,7 @@
     }
     
     .payment-verified-badge {
-      background: #28a745;
+      background: #a85858;
       color: white;
       padding: 5px 15px;
       border-radius: 20px;
@@ -74,6 +74,14 @@
       margin: 15px 0;
       border-radius: 4px;
     }
+    .invoice-card {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    
   </style>
 </head>
 <body onload="createConfetti(); loadInvoiceData();">
@@ -94,16 +102,16 @@
     <div class="container">
       <div class="thankyou-container">
         <div class="success-icon">
-          <i class="fas fa-check-circle"></i>
+          <i class="fa-solid fa-clock"></i>
         </div>
         
-        <h1 class="fade-in">Payment Received!</h1>
+        <h1 class="fade-in">Payment Under Verification!</h1>
         <p class="subtitle">Thank you for your booking. We'll contact you within 24 hours.</p>
         
         <!-- Payment Status -->
         <div class="payment-status">
           <div class="payment-verified-badge">
-            <i class="fas fa-check-circle"></i> Payment Verified via UPI
+            <i class="fas fa-check-circle"></i> Payment pending verification
           </div>
           <div class="utr-details">
             <p><strong>UTR Number:</strong> <span id="displayUTR">Loading...</span></p>
@@ -114,7 +122,10 @@
         <!-- Invoice Card -->
         <div class="invoice-header">
           <h2><i class="fas fa-file-invoice"></i> INVOICE</h2>
-          <p>Booking Confirmed • Payment Verified</p>
+        </div>
+        <div class="invoice-card">
+          <i class="fa-solid fa-triangle-exclamation fa-2xl" style="color: rgb(243, 190, 2);"></i>
+          <p>Share your invoice with us for faster processing,If you cannot share the invoice,payment verification may take longer.</p>
         </div>
         
         <div class="confirmation-details">
@@ -235,9 +246,9 @@
         <div class="contact-support">
           <div class="detail-card">
             <h3><i class="fas fa-headset"></i> Need Immediate Assistance?</h3>
-            <p><i class="fab fa-whatsapp"></i> WhatsApp: <strong>+91 98765 43210</strong></p>
-            <p><i class="fas fa-phone"></i> Call: <strong>+91 98765 43210</strong></p>
-            <p><i class="fas fa-envelope"></i> Email: <strong>support@samraarchitect.com</strong></p>
+            <p><i class="fab fa-whatsapp"></i> WhatsApp: <strong>+91 6375626274</strong></p>
+            <p><i class="fas fa-phone"></i> Call: <strong>+91 6375626274</strong></p>
+            <p><i class="fas fa-envelope"></i> Email: <strong>architectsamra@gmail.com</strong></p>
             <p><i class="fas fa-clock"></i> Support Hours: Mon-Sat, 9 AM - 7 PM</p>
             <p><i class="fas fa-exclamation-circle"></i> Mention your Invoice ID in all communications</p>
           </div>
@@ -259,7 +270,7 @@
   <footer>
     <div class="footer-bottom">
       <p>© 2026 Samra Architect. All rights reserved.</p>
-      <p>UPI: samraarchitect@upi | Support: +91 98765 43210</p>
+      <p>UPI: samraarchitect@upi | Support: +91 6375626274</p>
     </div>
   </footer>
 
@@ -381,17 +392,6 @@ ${clientEmail}`;
   window.location.href = mailtoLink;
 }
     
-    // Auto-download invoice PDF after 3 seconds
-    setTimeout(() => {
-      const autoDownload = localStorage.getItem('autoDownloadInvoice');
-      if (autoDownload !== 'false' && typeof window.downloadInvoice === 'function') {
-        try {
-          downloadInvoice();
-        } catch (error) {
-          console.error('Error auto-downloading invoice:', error);
-        }
-      }
-    }, 3000);
     
     // Confetti animation
     function createConfetti() {

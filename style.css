@@ -77,10 +77,29 @@ body {
   padding: 1rem 2rem;
 }
 
-.logo h2 {
-  color: var(--secondary);
+/* Logo wrapper */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* space between image & text */
 }
 
+/* Logo image */
+.logoimg {
+    width: 60px;        /* adjust as needed */
+    height: 50px;
+    object-fit: contain;
+}
+
+/* Company name */
+.logo h2 {
+    font-family: "Poppins", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color:#490606;
+}
 .nav-menu {
   display: flex;
   list-style: none;
@@ -176,12 +195,12 @@ body {
 
 .btn-secondary {
   background: transparent;
-  color: white;
+  color: rgb(55, 113, 222);
   border: 2px solid white;
 }
 
 .btn-secondary:hover {
-  background: white;
+  background: rgb(14, 116, 231);
   color: var(--dark);
 }
 
@@ -705,7 +724,7 @@ footer {
 
 .success-icon {
   font-size: 5rem;
-  color: var(--success);
+  color: var(--primary-dark);
   margin-bottom: 2rem;
   animation: float 2s ease-in-out infinite;
 }
@@ -1502,12 +1521,13 @@ footer {
 
 /* Header */
 .small-header {
-  background: linear-gradient(
+  background: 
+    linear-gradient(
       rgba(0, 0, 0, 0.6),
       rgba(0, 0, 0, 0.6)
     ),
-    url("https://images.unsplash.com/photo-1503387762-592deb58ef4e")
-      center/cover;
+    url("assets/price.jpg") center center / cover no-repeat;
+
   color: white;
   text-align: center;
   padding: 80px 20px;

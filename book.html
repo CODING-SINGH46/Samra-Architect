@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
 
   <nav class="navbar">
@@ -74,56 +76,29 @@
             </div>
           </div>
 
+          <!-- Select Category -->
           <div class="form-group">
-            <label for="service"><i class="fas fa-concierge-bell"></i> Select Service *</label>
-            <select id="service" required onchange="updatePrice()">
-              <option value="">Choose a service...</option>
-              <option value="online|999|Online Consultation (30 min)">Online Consultation (30 min) - ₹999</option>
-              <option value="site|2999|Site Visit Consultation">Site Visit Consultation - ₹2,999</option>
-              <option value="concept|9999|Concept Design Package">Concept Design Package - ₹9,999</option>
-              <option value="full|0|Full Architectural Design">Full Architectural Design - Custom Quote</option>
+            <label for="category"><i class="fas fa-layer-group"></i> Select Plan Category *</label>
+            <select id="category" required onchange="loadPlans()">
+              <option value="">Choose category...</option>
+              <option value="blueprint">Blue Prints</option>
+              <option value="layout">Layout Plans</option>
             </select>
           </div>
 
-          <div class="form-group">
-            <label for="projectType"><i class="fas fa-building"></i> Project Type</label>
-            <select id="projectType">
-              <option value="">Select project type</option>
-              <option value="residential">Residential</option>
-              <option value="commercial">Commercial</option>
-              <option value="renovation">Renovation</option>
-              <option value="interior">Interior Design</option>
+          <!-- Select Plan -->
+          <div class="form-group" id="planGroup" style="display:none;">
+            <label for="service"><i class="fas fa-concierge-bell"></i> Select Plan *</label>
+            <select id="service" required onchange="handlePlanChange()">
+              <option value="">Choose plan...</option>
             </select>
           </div>
 
-          <div class="form-group">
-            <label for="timeline"><i class="fas fa-calendar-alt"></i> Project Timeline</label>
-            <select id="timeline">
-              <option value="">Select timeline</option>
-              <option value="urgent">Within 1 month</option>
-              <option value="soon">1-3 months</option>
-              <option value="flexible">3-6 months</option>
-              <option value="future">6+ months</option>
-            </select>
+          <!-- Square Feet Input (Only for 3D Elevation) -->
+          <div class="form-group" id="sqftGroup" style="display:none;">
+            <label for="sqft"><i class="fas fa-ruler-combined"></i> Enter Total Area (sq.ft) *</label>
+            <input type="number" id="sqft" placeholder="Enter square feet" min="1" oninput="calculateTotal()">
           </div>
-
-          <div class="form-group">
-            <label for="details"><i class="fas fa-file-alt"></i> Project Details *</label>
-            <textarea id="details" placeholder="Tell us about your project, requirements, budget, and any specific ideas you have..." rows="5" required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="source">How did you hear about us?</label>
-            <select id="source">
-              <option value="">Select source</option>
-              <option value="google">Google Search</option>
-              <option value="social">Social Media</option>
-              <option value="referral">Referral</option>
-              <option value="previous">Previous Client</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
           <div class="form-group checkbox">
             <input type="checkbox" id="terms" required>
             <label for="terms">I agree to the <a href="#">terms and conditions</a> and privacy policy</label>
@@ -166,48 +141,133 @@
 
   <script src="script.js"></script>
   <script>
-    // Update price and show summary
-    function updatePrice() {
-      const serviceSelect = document.getElementById('service');
-      const selectedValue = serviceSelect.value;
-      
-      if (selectedValue) {
-        const [type, price, name] = selectedValue.split('|');
-        document.getElementById('serviceName').textContent = name;
-        document.getElementById('servicePrice').textContent = `₹${price}`;
-        document.getElementById('priceSummary').style.display = 'block';
-      } else {
-        document.getElementById('priceSummary').style.display = 'none';
-      }
+const plans = {
+  blueprint: [
+    { value: "registry", name: "Registry of Plot", price: 299, type: "fixed" },
+    { value: "patta", name: "Patta of Plot", price: 499, type: "fixed" },
+    { value: "construction", name: "House Construction Plan", price: 799, type: "fixed" }
+  ],
+  layout: [
+    { value: "ground", name: "Ground Plan", price: 2499, type: "fixed" },
+    { value: "groundfirst", name: "Ground + First Floor", price: 4499, type: "fixed" },
+    { value: "front3d", name: "3D Elevation - Only Front", price: 11, type: "perSqft" },
+    { value: "corner3d", name: "3D Elevation - Corner House", price: 13, type: "perSqft" },
+    { value: "fullplan", name: "Full Plans with Elevation", price: 15, type: "perSqft" }
+  ]
+};
+
+let selectedPlan = null;
+
+function loadPlans() {
+  const category = document.getElementById("category").value;
+  const serviceSelect = document.getElementById("service");
+
+  serviceSelect.innerHTML = '<option value="">Choose plan...</option>';
+  document.getElementById("planGroup").style.display = "none";
+  resetPricing();
+
+  if (!plans[category]) return;
+
+  plans[category].forEach(plan => {
+    const option = document.createElement("option");
+    option.value = plan.value;
+    option.textContent = plan.name;
+    serviceSelect.appendChild(option);
+  });
+
+  document.getElementById("planGroup").style.display = "block";
+}
+
+function handlePlanChange() {
+  const category = document.getElementById("category").value;
+  const planValue = document.getElementById("service").value;
+
+  resetPricing();
+
+  if (!planValue) return;
+
+  selectedPlan = plans[category].find(p => p.value === planValue);
+
+  if (!selectedPlan) return;
+
+  document.getElementById("serviceName").textContent = selectedPlan.name;
+
+  if (selectedPlan.type === "perSqft") {
+    document.getElementById("sqftGroup").style.display = "block";
+    document.getElementById("servicePrice").textContent =
+      `₹${selectedPlan.price} per sq.ft`;
+  } else {
+    document.getElementById("sqftGroup").style.display = "none";
+    document.getElementById("servicePrice").textContent =
+      `₹${selectedPlan.price}`;
+  }
+
+  document.getElementById("priceSummary").style.display = "block";
+}
+
+function calculateTotal() {
+  if (!selectedPlan) return;
+
+  if (selectedPlan.type !== "perSqft") return;
+
+  const sqft = parseInt(document.getElementById("sqft").value);
+
+  if (!sqft || sqft <= 0) {
+    document.getElementById("servicePrice").textContent =
+      `₹${selectedPlan.price} per sq.ft`;
+    return;
+  }
+
+  const total = selectedPlan.price * sqft;
+
+  document.getElementById("serviceName").textContent =
+    `${selectedPlan.name} (${sqft} sq.ft)`;
+
+  document.getElementById("servicePrice").textContent =
+    `₹${total}`;
+}
+
+function resetPricing() {
+  selectedPlan = null;
+  document.getElementById("sqftGroup").style.display = "none";
+  document.getElementById("sqft").value = "";
+  document.getElementById("priceSummary").style.display = "none";
+}
+
+function submitBooking(e) {
+  e.preventDefault();
+
+  if (!selectedPlan) {
+    alert("Please select a plan.");
+    return;
+  }
+
+  let finalPrice = selectedPlan.price;
+
+  if (selectedPlan.type === "perSqft") {
+    const sqft = parseInt(document.getElementById("sqft").value);
+    if (!sqft || sqft <= 0) {
+      alert("Please enter valid square feet.");
+      return;
     }
-    
-    // Handle booking form submission
-    function submitBooking(e) {
-      e.preventDefault();
-      
-      // Get form data
-      const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        service: document.getElementById('service').value.split('|')[2],
-        projectType: document.getElementById('projectType').value,
-        timeline: document.getElementById('timeline').value,
-        details: document.getElementById('details').value,
-        source: document.getElementById('source').value
-      };
-      
-      // Save booking details
-      localStorage.setItem('bookingDetails', JSON.stringify(formData));
-      
-      // Extract price from service select
-      const price = document.getElementById('service').value.split('|')[1];
-      const serviceName = document.getElementById('service').value.split('|')[2];
-      
-      // Redirect to payment page
-      window.location.href = `payment.html?price=${price}&service=${encodeURIComponent(serviceName)}`;
-    }
-  </script>
+    finalPrice = selectedPlan.price * sqft;
+  }
+
+  const formData = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    address: document.getElementById("address").value,
+    service: selectedPlan.name,
+    price: finalPrice
+  };
+
+  localStorage.setItem("bookingDetails", JSON.stringify(formData));
+
+  window.location.href =
+    `payment.html?price=${finalPrice}&service=${encodeURIComponent(selectedPlan.name)}`;
+}
+</script>
 </body>
+
 </html>
