@@ -200,7 +200,7 @@
       document.getElementById('bookingNum').textContent = bookingNum;
       
       // Generate QR code
-      const qrText = `upi://pay?pa=samraarchitect@upi&pn=Samra%20Architect&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(service)}`;
+      const qrText = `upi://pay?pa=samraarchitect@ybl&pn=Samra%20Architect&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(service)}`;
       QRCode.toCanvas(document.getElementById('qrcode'), qrText, {
         width: 200,
         height: 200,
